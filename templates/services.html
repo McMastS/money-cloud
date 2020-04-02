@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block head %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/services.css')}}">
+{% endblock %}
+
+{% block body %}
+<div class="card-container">
+    <div class="card">
+        <h3>Currency Tracker</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Currency</th>
+                    <th scope="col">Current Value</th>
+                    <th scope="col">Change</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for currency, values in curr_tracker.items() %}
+                <tr>
+                    <th scope="row">{{ currency }}</th>
+                    <th>{{ values[0] }}</th>
+                    <th>{{ values[1] }}</th>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card">
+        <h3>Market Index Tracker</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Currency</th>
+                    <th scope="col">Current Value</th>
+                    <th scope="col">Change</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for market, values in mark_inx_trkr.items() %}
+                <tr>
+                    <th scope="row">{{ market }}</th>
+                    <th>{{ values[0] }}</th>
+                    <th>{{ values[1] }}</th>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
