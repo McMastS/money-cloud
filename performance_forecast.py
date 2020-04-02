@@ -10,23 +10,30 @@ import sys
 import pandas as pd
 from confluent_kafka import Producer, Consumer, KafkaException
 
-#Global Variables
+# Global Variables
 COS_ENDPOINT = "https://s3.us-east.cloud-object-storage.appdomain.cloud"
 COS_API_KEY_ID = "O6M_tX17yK4Y-8o4RXI6ijQ5BRisJkSJvdUCcamgBt49"
 COS_AUTH_ENDPOINT = "https://iam.cloud.ibm.com/identity/token"
 COS_RESOURCE_CRN = "crn:v1:bluemix:public:cloud-object-storage:global:a/c5dc1427dfaa4a80894540effca9ecdb:58e73feb-1eff-4601-a9f7-4cceb8a81244::"
-cos=ibm_boto3.resource("s3",ibm_api_key_id=COS_API_KEY_ID,ibm_service_instance_id=COS_RESOURCE_CRN,ibm_auth_endpoint=COS_AUTH_ENDPOINT,config=Config(signature_version="oauth"),endpoint_url=COS_ENDPOINT)
-def main():
-    listen_eventMessage('Performance_Forc','Performance_Forc',False)
-def push_PerformanceForecast():
-    PerformanceForecastJson=PerformanceForecast_API()
+cos = ibm_boto3.resource("s3", ibm_api_key_id=COS_API_KEY_ID, ibm_service_instance_id=COS_RESOURCE_CRN,
+                         ibm_auth_endpoint=COS_AUTH_ENDPOINT, config=Config(signature_version="oauth"),
+                         endpoint_url=COS_ENDPOINT)
 
-    #print(markIndexJson)
-    create_text_file("mc-objstore","Performance_Forcast.json",PerformanceForecastJson)
+
+def main():
+    push_PerformanceForecast()
+
+
+def push_PerformanceForecast():
+    PerformanceForecastJson = PerformanceForecast_API()
+
+    # print(markIndexJson)
+    create_text_file("mc-objstore", "Performance_Forcast.json", PerformanceForecastJson)
     print()
     get_bucket_contents("mc-objstore")
     print()
     get_item("mc-objstore", "Performance_Forcast.json")
+
 
 def pull_PerformanceForecast():
     try:
@@ -39,6 +46,7 @@ def pull_PerformanceForecast():
         print("CLIENT ERROR: {0}\n".format(be))
     except Exception as e:
         print("Unable to retrieve file contents: {0}".format(e))
+
 
 def PerformanceForecast_API():
     names = ["DJI", "MSFT", "AAPL", "INTC", "AMAZ", "CSCO", "GOOG"]
@@ -61,11 +69,13 @@ def PerformanceForecast_API():
         close = close + closevalue[len(closevalue.keys()) - 1] + closechanges
         openchanges = openchanges / 5
         open = open + openvalue[len(openvalue.keys()) - 1] + openchanges
-        keyValDict[name] = [date, open, close]
+        keyValDict[name] = [round(open,2), round(close,2)]
     out_json = json.dumps(keyValDict)
     return out_json
-#get_buckets() function
-#retrieves a list of available buckets in object storage
+
+
+# get_buckets() function
+# retrieves a list of available buckets in object storage
 def get_buckets():
     print("Retrieving list of buckets")
     try:
@@ -76,6 +86,7 @@ def get_buckets():
         print("CLIENT ERROR: {0}\n".format(be))
     except Exception as e:
         print("Unable to retrieve list buckets: {0}".format(e))
+
 
 def create_text_file(bucket_name, item_name, file_text):
     print("Creating new item: {0}".format(item_name))
@@ -89,6 +100,7 @@ def create_text_file(bucket_name, item_name, file_text):
     except Exception as e:
         print("Unable to create text file: {0}".format(e))
 
+
 def get_bucket_contents(bucket_name):
     print("Retrieving bucket contents from: {0}".format(bucket_name))
     try:
@@ -99,6 +111,7 @@ def get_bucket_contents(bucket_name):
         print("CLIENT ERROR: {0}\n".format(be))
     except Exception as e:
         print("Unable to retrieve bucket contents: {0}".format(e))
+
 
 def get_item(bucket_name, item_name):
     print("Retrieving item from bucket: {0}, key: {1}".format(bucket_name, item_name))
@@ -245,5 +258,6 @@ class Observer(object):
         if (args == 'Performance_Forc'):
             push_PerformanceForecast()
             pull_PerformanceForecast()
+
 
 main()

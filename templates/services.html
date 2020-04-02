@@ -20,8 +20,8 @@
                 {% for currency, values in curr_tracker.items() %}
                 <tr>
                     <th scope="row">{{ currency }}</th>
-                    <th>{{ values[0] }}</th>
-                    <th>{{ values[1] }}</th>
+                    <th>{{ "%.2f" | format(values[0]) }}</th>
+                    <th>{{ "%.f2" | format(values[1]) }}</th>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -32,18 +32,20 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th scope="col">Currency</th>
+                    <th scope="col">Market</th>
                     <th scope="col">Current Value</th>
                     <th scope="col">Change</th>
                 </tr>
             </thead>
             <tbody>
                 {% for market, values in mark_inx_trkr.items() %}
-                <tr>
-                    <th scope="row">{{ market }}</th>
-                    <th>{{ values[0] }}</th>
-                    <th>{{ values[1] }}</th>
-                </tr>
+                    {% if values[0] %}
+                    <tr>
+                        <th scope="row">{{ market }}</th>
+                        <th>{{ "%.2f" | format(values[0]) }}</th>
+                        <th>{{ "%.2f" | format(values[1]) }}</th>
+                    </tr>
+                    {% endif %}
                 {% endfor %}
             </tbody>
         </table>

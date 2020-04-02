@@ -124,3 +124,5 @@ class EventStreamsDriver(object):
         #     future.result()
         # sys.exit(0)
 
+access = EventStreamsDriver('Market-Idx', 'Market-Idx', True)
+access.run_task()
