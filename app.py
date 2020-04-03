@@ -17,7 +17,10 @@ def services():
 
     mark_inx_trkr = os_access.get_item('mc-objstore', 'mark_inx_trkr.json').decode().replace("'", '"')
     # service_data.append(json.loads(json_string))
-    return render_template('services.html', curr_tracker=json.loads(curr_tracker), mark_inx_trkr=json.loads(mark_inx_trkr))
+
+    perf_forecast = os_access.get_item('mc-objstore', 'Performance_Forcast.json').decode().replace("'", '"')
+    return render_template('services.html', curr_tracker=json.loads(curr_tracker), 
+                            mark_inx_trkr=json.loads(mark_inx_trkr), perf_forecast=json.loads(perf_forecast))
 
 @app.route('/refresh-service', methods=['GET'])
 def refresh_service(service_name=None):

@@ -5,8 +5,18 @@
 {% endblock %}
 
 {% block body %}
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Available services
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <li class="dropdown-item" id="sub-currency">Currency Tracker</li>
+        <li class="dropdown-item" id="sub-market">Market Index Tracker</li>
+        <li class="dropdown-item" id="sub-performance">Performance Forecaster</li>
+    </div>
+</div>
 <div class="card-container">
-    <div class="card">
+    <div class="card" id="currency-tracker">
         <h3>Currency Tracker</h3>
         <table class="table table-bordered">
             <thead>
@@ -20,14 +30,17 @@
                 {% for currency, values in curr_tracker.items() %}
                 <tr>
                     <th scope="row">{{ currency }}</th>
-                    <th>{{ "%.2f" | format(values[0]) }}</th>
-                    <th>{{ "%.f2" | format(values[1]) }}</th>
+                    <th>{{ "%.4f" | format(values[0]) }}</th>
+                    <th>{{ "%.4f" | format(values[1]) }}</th>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        <button class="btn btn-primary" type="button" id="unsubscribe-1" onclick="this.parentNode.style.display = 'none';">
+            Unsubscribe
+        </button>
     </div>
-    <div class="card">
+    <div class="card" id="market-tracker">
         <h3>Market Index Tracker</h3>
         <table class="table table-bordered">
             <thead>
@@ -42,13 +55,43 @@
                     {% if values[0] %}
                     <tr>
                         <th scope="row">{{ market }}</th>
-                        <th>{{ "%.2f" | format(values[0]) }}</th>
-                        <th>{{ "%.2f" | format(values[1]) }}</th>
+                        <th>{{ "%.4f" | format(values[0]) }}</th>
+                        <th>{{ "%.4f" | format(values[1]) }}</th>
                     </tr>
                     {% endif %}
                 {% endfor %}
             </tbody>
         </table>
+        <button class="btn btn-primary" type="button" id="unsubscribe-2" onclick="this.parentNode.style.display = 'none';">
+            Unsubscribe
+        </button>
+    </div>
+    <div class="card" id="perf-forecast">
+        <h3>Performance Forecaster</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Ticker</th>
+                    <th scope="col">Forecasted Open</th>
+                    <th scope="col">Forecasted Close</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticker, values in perf_forecast.items() %}
+                    {% if values[0] %}
+                    <tr>
+                        <th scope="row">{{ ticker }}</th>
+                        <th>{{ "%.4f" | format(values[0]) }}</th>
+                        <th>{{ "%.4f" | format(values[1]) }}</th>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+        <button class="btn btn-primary" type="button" id="unsubscribe-3" onclick="this.parentNode.style.display = 'none';">
+            Unsubscribe
+        </button>
     </div>
 </div>
+<!-- <script src="{{ url_for('static', filename='javascript/services.js') }}" -->
 {% endblock %}
