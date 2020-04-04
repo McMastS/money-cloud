@@ -157,6 +157,7 @@ def get_item(bucket_name, item_name):
     except Exception as e:
         print("Unable to retrieve file contents: {0}".format(e))
 
+#pushes event message to topic in eventsream
 def push_eventMessage():
     driver = EventStreamsDriver('Market-Idx', 'Market-Idx', True)
     driver.run_task()

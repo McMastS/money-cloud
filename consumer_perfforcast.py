@@ -42,7 +42,7 @@ def pull_marketIndexTracker():
     #markIndexJson=get_item("mc-objstore", "mark_inx_trkr.json")
     try:
         markIndexJson = cos.Object("mc-objstore", "Performance_Forcast.json").get()
-        print('Accessing Object Storage, retrieving: mark_inx_trkr.json')
+        print('Accessing Object Storage, retrieving: Performance_Forcast.json')
         print()
         print("File Contents: {0}".format(markIndexJson["Body"].read()))
 
