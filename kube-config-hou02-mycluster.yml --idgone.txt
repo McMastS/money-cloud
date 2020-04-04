@@ -1,0 +1,25 @@
+apiVersion: v1
+clusters:
+- name: groupcluster/XXXXXXXXXXXXXXXXXXXXXXXXXXX
+  cluster:
+    certificate-authority: ca-hou02-mycluster.pem
+    server: https://c4.dal12.containers.cloud.ibm.com:XXXXXXXXX
+contexts:
+- name: mycluster/XXXXXXXXXXXXXXXXXXXXXXX
+  context:
+    cluster: mycluster/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    user: mrist@uwo.ca/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    namespace: default
+current-context: groupcluster/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+kind: Config
+users:
+- name: mrist@uwo.ca/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  user:
+    auth-provider:
+      name: oidc
+      config:
+        client-id: kube
+        client-secret: kube
+        id-token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        idp-issuer-url: https://iam.bluemix.net/identity
+        refresh-token: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

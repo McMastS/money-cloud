@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: performanceforcast-deployment
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: performanceforcast
+  template:
+    metadata:
+      labels:
+        app: performanceforcast
+    spec:
+      containers:
+      - name: performanceforcast
+        image: us.icr.io/mrist/rsmike00/performanceforcast:v1

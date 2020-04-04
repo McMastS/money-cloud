@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mymtpod
+spec:
+  containers:
+    - name: markettracker
+      image: us.icr.io/mrist/rsmike00/markettracker:v5
+  imagePullSecrets:
+    - name: default-us-icr-io

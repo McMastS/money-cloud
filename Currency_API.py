@@ -42,6 +42,7 @@ def main():
     while True:
         schedule.run_pending()
         time.sleep(7200)
+        push_Currency()
 
 
 def push_Currency():

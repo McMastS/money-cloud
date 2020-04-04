@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypfpod
+spec:
+  containers:
+    - name: performanceforcast
+      image: us.icr.io/mrist/rsmike00/performanceforcast:v1
+  imagePullSecrets:
+    - name: default-us-icr-io
