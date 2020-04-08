@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: industlisting-deployment
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: industlisting
+  template:
+    metadata:
+      labels:
+        app: industlisting
+    spec:
+      containers:
+      - name: industlisting
+        image: us.icr.io/mrist/rsmike00/industlisting:v3
