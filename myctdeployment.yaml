@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: currencytracker-deployment
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: currencytracker
+  template:
+    metadata:
+      labels:
+        app: currencytracker
+    spec:
+      containers:
+      - name: currencytracker
+        image: us.icr.io/mrist/rsmike00/currencytracker:v2

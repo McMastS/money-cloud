@@ -36,43 +36,22 @@ def main():
     #initial call to push data to object storage (upon service startup)
     push_marketIndexTracker()
 
-
     # Every day at 9:35am market Index tracker is called / updated.
-    schedule.every().day.at("13:20").do(push_marketIndexTracker)
-    # Every day at 4:00pm market Index tracker is called / updated.
-    schedule.every().day.at("13:21").do(push_marketIndexTracker)
-    # Every day at 4:00pm market Index tracker is called / updated.
-    schedule.every().day.at("13:22").do(push_marketIndexTracker)
-    # Every day at 4:00pm market Index tracker is called / updated.
-    schedule.every().day.at("13:23").do(push_marketIndexTracker)
-    # Every day at 4:00pm market Index tracker is called / updated.
-    schedule.every().day.at("13:24").do(push_marketIndexTracker)
-    # Every day at 4:00pm market Index tracker is called / updated.
-    schedule.every().day.at("13:25").do(push_marketIndexTracker)
-    # Every day at 4:00pm market Index tracker is called / updated.
-    schedule.every().day.at("13:26").do(push_marketIndexTracker)
-    # Every day at 4:00pm market Index tracker is called / updated.
-    schedule.every().day.at("13:27").do(push_marketIndexTracker)
-    # Every day at 4:00pm market Index tracker is called / updated.
-    schedule.every().day.at("13:28").do(push_marketIndexTracker)
-    # Every day at 4:00pm market Index tracker is called / updated.
-    schedule.every().day.at("13:29").do(push_marketIndexTracker)
-    # Every day at 4:00pm market Index tracker is called / updated.
-    schedule.every().day.at("13:30").do(push_marketIndexTracker)
-    # Every day at 4:00pm market Index tracker is called / updated.
-    schedule.every().day.at("13:31").do(push_marketIndexTracker)
-    # Every day at 4:00pm market Index tracker is called / updated.
-    schedule.every().day.at("13:32").do(push_marketIndexTracker)
-    # Every day at 4:00pm market Index tracker is called / updated.
-    schedule.every().day.at("13:33").do(push_marketIndexTracker)
-    # Every day at 4:00pm market Index tracker is called / updated.
-    schedule.every().day.at("13:34").do(push_marketIndexTracker)
-    # Every day at 4:00pm market Index tracker is called / updated.
-    schedule.every().day.at("13:35").do(push_marketIndexTracker)
+    #schedule.every().day.at("9:35").do(push_marketIndexTracker)
+    # Every day at 9:35am market Index tracker is called / updated.
+    #schedule.every().day.at("10:00").do(push_marketIndexTracker)
+    # Every day at 9:35am market Index tracker is called / updated.
+    #schedule.every().day.at("12:00").do(push_marketIndexTracker)
+    # Every day at 9:35am market Index tracker is called / updated.
+    #schedule.every().day.at("14:00").do(push_marketIndexTracker)
+    # Every day at 9:35am market Index tracker is called / updated.
+    #schedule.every().day.at("16:00").do(push_marketIndexTracker)
+
 
     while True:
         schedule.run_pending()
-        time.sleep(60)
+        time.sleep(7200)
+        push_marketIndexTracker()
 
 
 def push_marketIndexTracker():
@@ -80,12 +59,12 @@ def push_marketIndexTracker():
 
     #print(markIndexJson)
     create_text_file("mc-objstore","mark_inx_trkr.json",markIndexJson)
-    print()
+    #print()
     #instantiate event stream driver and run
     push_eventMessage()
-    print()
-    get_bucket_contents("mc-objstore")
-    print()
+    #print()
+    #get_bucket_contents("mc-objstore")
+    #print()
     #get_item("mc-objstore", "mark_inx_trkr.json")
 
 def marketIndex_API():
@@ -146,12 +125,12 @@ def get_buckets():
         print("Unable to retrieve list buckets: {0}".format(e))
 
 def create_text_file(bucket_name, item_name, file_text):
-    print("Creating new item: {0}".format(item_name))
+    #print("Creating new item: {0}".format(item_name))
     try:
         cos.Object(bucket_name, item_name).put(
             Body=file_text
         )
-        print("Item: {0} created!".format(item_name))
+        #print("Item: {0} created!".format(item_name))
     except ClientError as be:
         print("CLIENT ERROR: {0}\n".format(be))
     except Exception as e:
@@ -172,12 +151,13 @@ def get_item(bucket_name, item_name):
     print("Retrieving item from bucket: {0}, key: {1}".format(bucket_name, item_name))
     try:
         file = cos.Object(bucket_name, item_name).get()
-        print("File Contents: {0}".format(file["Body"].read()))
+        #print("File Contents: {0}".format(file["Body"].read()))
     except ClientError as be:
         print("CLIENT ERROR: {0}\n".format(be))
     except Exception as e:
         print("Unable to retrieve file contents: {0}".format(e))
 
+#pushes event message to topic in eventsream
 def push_eventMessage():
     driver = EventStreamsDriver('Market-Idx', 'Market-Idx', True)
     driver.run_task()

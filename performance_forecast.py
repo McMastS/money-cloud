@@ -9,6 +9,7 @@ import asyncio
 import sys
 import pandas as pd
 from confluent_kafka import Producer, Consumer, KafkaException
+from event_streams_access import ProducerTask, EventStreamsDriver, ConsumerTask
 
 # Global Variables
 COS_ENDPOINT = "https://s3.us-east.cloud-object-storage.appdomain.cloud"
@@ -23,21 +24,26 @@ cos = ibm_boto3.resource("s3", ibm_api_key_id=COS_API_KEY_ID, ibm_service_instan
 def main():
     push_PerformanceForecast()
 
+    while True:
+        schedule.run_pending()
+        time.sleep(7200)
+        push_PerformanceForecast()
+
 
 def push_PerformanceForecast():
     PerformanceForecastJson = PerformanceForecast_API()
 
     # print(markIndexJson)
     create_text_file("mc-objstore", "Performance_Forcast.json", PerformanceForecastJson)
-    print()
-    get_bucket_contents("mc-objstore")
-    print()
-    get_item("mc-objstore", "Performance_Forcast.json")
-
+    #print()
+    #get_bucket_contents("mc-objstore")
+    #print()
+    #get_item("mc-objstore", "Performance_Forcast.json")
+    push_eventMessage()
 
 def pull_PerformanceForecast():
     try:
-        markIndexJson = cos.Object("mc-objstore", "Performance_Forcast.json.json").get()
+        markIndexJson = cos.Object("mc-objstore", "Performance_Forcast.json").get()
         print("File Contents: {0}".format(markIndexJson["Body"].read()))
 
         return markIndexJson
@@ -124,140 +130,10 @@ def get_item(bucket_name, item_name):
         print("Unable to retrieve file contents: {0}".format(e))
 
 
-def listen_eventMessage(topic_name, service_name, producer):
-    driver = EventStreamsDriver(topic_name, service_name, producer)
+def push_eventMessage():
+    driver = EventStreamsDriver('Performance-forcast', 'Performance-forcast', True)
     driver.run_task()
 
-
-# code creates producertask
-class ProducerTask(object):
-    def __init__(self, conf, topic_name):
-        self.topic_name = topic_name
-        self.producer = Producer(conf)
-        self.counter = 0
-        self.running = True
-
-    def stop(self):
-        self.running = False
-
-    def on_delivery(self, err, msg):
-        if err:
-            print('Delivery report: Failed sending message {0}'.format(msg.value()))
-            print(err)
-            # We could retry sending the message
-        else:
-            print('Message produced, offset: {0}'.format(msg.offset()))
-
-    def run(self):
-        self.producer.produce(self.topic_name, "Hello! This is a message! 2", callback=self.on_delivery)
-        self.producer.poll(0)
-
-        self.producer.flush()
-
-
-# code creates consumertask
-class ConsumerTask(object):
-
-    def __init__(self, conf, topic_name):
-        self.consumer = Consumer(conf)
-        self.topic_name = topic_name
-        self.running = True
-        self._observers = []
-
-    def stop(self):
-        self.running = False
-
-    def print_assignment(self, consumer, partition):
-        print('Assignment: ', partition)
-
-    def register_observer(self, observer):
-        self._observers.append(observer)
-
-    def notify_observers(self, *args, **kwargs):
-        for observer in self._observers:
-            observer.notify(self, *args, **kwargs)
-
-    def run(self):
-        self.consumer.subscribe([self.topic_name], on_assign=self.print_assignment)
-
-        try:
-            while True:
-                msg = self.consumer.poll(1)
-                if msg is None:
-                    continue
-                if msg.error():
-                    raise KafkaException(msg.error())
-                else:
-                    sys.stderr.write('%% %s [%d] at offset %d with key %s:\n' %
-                                     (msg.topic(), msg.partition(), msg.offset(),
-                                      str(msg.key())))
-                    print(msg.value())
-                    self.notify_observers(msg.topic())
-
-                    # could add something here that will tell the widget / UI to go to Object Storage
-        except KeyboardInterrupt:
-            sys.stderr.write("%% Aborted by user\n")
-        finally:
-            self.consumer.unsubscribe()
-            self.consumer.close()
-
-
-# code creates an instance of eventstreamsdriver
-class EventStreamsDriver(object):
-    def __init__(self, topic_name, service_name, producer):
-        self.consumer = None
-        self.producer = None
-
-        if producer:
-            self.run_producer = True
-        else:
-            self.run_producer = False
-
-        self.topic_name = topic_name
-        self.base_config = {
-            'bootstrap.servers': 'broker-1-9tl582p7src9jz2d.kafka.svc03.us-south.eventstreams.cloud.ibm.com:9093,broker-5-9tl582p7src9jz2d.kafka.svc03.us-south.eventstreams.cloud.ibm.com:9093,broker-4-9tl582p7src9jz2d.kafka.svc03.us-south.eventstreams.cloud.ibm.com:9093,broker-2-9tl582p7src9jz2d.kafka.svc03.us-south.eventstreams.cloud.ibm.com:9093,broker-3-9tl582p7src9jz2d.kafka.svc03.us-south.eventstreams.cloud.ibm.com:9093,broker-0-9tl582p7src9jz2d.kafka.svc03.us-south.eventstreams.cloud.ibm.com:9093',
-            'security.protocol': 'SASL_SSL',
-            'sasl.mechanisms': 'PLAIN',
-            'sasl.username': 'token',
-            'sasl.password': 'nbHuMTLnLi-rmmhP22gUQSUuExarXsEpF8z49FSBLJRj',
-            'api.version.request': True,
-            'broker.version.fallback': '0.10.2.1',
-            'log.connection.close': False
-        }
-        self.prod_config = {
-            'client.id': service_name + '-producer'
-        }
-        self.cons_config = {
-            'client.id': service_name + '-consumer',
-            'group.id': 'money-cloud-services'
-        }
-
-        for key in self.base_config:
-            self.cons_config[key] = self.base_config[key]
-            self.prod_config[key] = self.base_config[key]
-
-    def run_task(self):
-        # tasks = []
-        if self.run_producer:
-            self.producer = ProducerTask(self.prod_config, self.topic_name)
-            self.producer.run()
-            # tasks.append(asyncio.ensure_future(self.producer.run()))
-        else:
-            self.consumer = ConsumerTask(self.cons_config, self.topic_name)
-            observer = Observer(self.consumer)
-            self.consumer.run()
-
-
-# in conjunction with the code in consumertask and eventstreamsdriver, Observer allows 'notify' upon reciept of a message and triggers our action
-class Observer(object):
-    def __init__(self, ConsumerTask):
-        ConsumerTask.register_observer(self)
-
-    def notify(self, ConsumerTask, *args, **kwargs):
-        print('Got', args, kwargs, 'From', ConsumerTask)
-        if (args == 'Performance_Forc'):
-            push_PerformanceForecast()
-            pull_PerformanceForecast()
 
 
 main()

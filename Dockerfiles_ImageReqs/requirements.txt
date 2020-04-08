@@ -1,0 +1,7 @@
+requests
+schedule
+yfinance
+ibm-cos-sdk
+boto3
+confluent_kafka
+asyncio

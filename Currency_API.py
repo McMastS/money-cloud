@@ -35,13 +35,14 @@ def main():
 
 
     # Every day at 9:35am market Index tracker is called / updated.
-    schedule.every().day.at("09:35").do(push_Currency)
+    #schedule.every().day.at("09:35").do(push_Currency)
     # Every day at 4:00pm market Index tracker is called / updated.
-    schedule.every().day.at("16:00").do(push_Currency)
+    #schedule.every().day.at("16:00").do(push_Currency)
 
     while True:
         schedule.run_pending()
-        time.sleep(60)
+        time.sleep(7200)
+        push_Currency()
 
 
 def push_Currency():
