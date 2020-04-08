@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: markettracker-deployment
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: markettracker
+  template:
+    metadata:
+      labels:
+        app: markettracker
+    spec:
+      containers:
+      - name: markettracker
+        image: us.icr.io/mrist/rsmike00/markettracker:v5
