@@ -11,7 +11,11 @@ import json
 import ibm_boto3
 from ibm_botocore.client import Config, ClientError
 from event_streams_access import ProducerTask, EventStreamsDriver, ConsumerTask
-
+from flask import Flask, Response, render_template, url_for, redirect, request
+import obj_str_access as os_access
+import event_streams_access as es_access
+from pusher import Pusher
+pusher = Pusher(app_id=u'976708', key=u'46dce6ce5257370ecd3e', secret=u'8ea438504adf84b50776', cluster=u'us2')
 #Global Variables
 
 #for Object storage
@@ -41,7 +45,7 @@ def main():
 
     while True:
         schedule.run_pending()
-        time.sleep(7200)
+        time.sleep(72)
         push_Currency()
 
 
@@ -131,6 +135,12 @@ def get_item(bucket_name, item_name):
 def push_eventMessage():
     driver = EventStreamsDriver('Currency_Tracker', 'Currency_Tracker', True)
     driver.run_task()
+    data = request.form
+	pusher.trigger(u'message', u'send', {
+		u'name': 'API',
+		u'message': "Currency updated, please reload the page"
+	})
+	return "message sent"
 
 
 main() #start program

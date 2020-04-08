@@ -144,7 +144,7 @@ class ConsumerTask(object):
 
     def run(self):
         self.consumer.subscribe([self.topic_name], on_assign=self.print_assignment)
-
+        print(consumer.listTopics())
         try:
             while True:
                 msg = self.consumer.poll(1)
@@ -158,7 +158,8 @@ class ConsumerTask(object):
                                     str(msg.key())))
                     #print(msg.value())
                     self.notify_observers(msg.topic())
-
+                    print(msg.topic())
+                    print(msg.value())
                     #could add something here that will tell the widget / UI to go to Object Storage
         except KeyboardInterrupt:
             sys.stderr.write("%% Aborted by user\n")
